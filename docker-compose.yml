@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    image: gopetuah:1.0.0
+    hostname: gopetuah
+    container_name: gopetuah
+    ports:
+      - 8080:8080
+    restart: "unless-stopped"
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      tags:
+        - "gopetuah:1.0.0"
+    profiles:
+      - prod
+      - build

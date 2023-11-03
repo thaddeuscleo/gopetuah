@@ -1,8 +1,11 @@
 run:
 	@go run cmd/proxy/main.go
 
-test-server-1:
-	@go run cmd/test_server/main.go 8000
+docker-build:
+	@docker compose --profile build build
 
-test-server-2:
-	@go run cmd/test_server/main.go 9000
+docker-up:
+	@docker compose --profile prod up -d
+
+docker-down:
+	@docker compose --profile prod down
