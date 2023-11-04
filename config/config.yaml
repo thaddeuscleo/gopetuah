@@ -5,10 +5,10 @@ proxy:
 upstreams:
   anyname_upstream1:
     host: localhost
-    port: 8000
+    port: 7000
   anyname_upstream2:
     host: localhost
-    port: 9000
+    port: 8000
   anyname_upstream3:
     host: localhost
-    port: 7000
+    port: 9000
