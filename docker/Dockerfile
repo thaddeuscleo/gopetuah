@@ -26,13 +26,13 @@ RUN adduser \
 
 
 # Download dependency    
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 
 # Build Project
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/app ./cmd/proxy/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/app ./main.go
 
 
 ############################
@@ -53,4 +53,4 @@ COPY --from=build /go/bin/app /
 
 
 # Entrypoint
-CMD ["/app"]
+CMD ["/app", "proxy"]
