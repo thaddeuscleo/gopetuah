@@ -2,6 +2,8 @@ package proxy
 
 import (
 	"log"
+	"log/slog"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -17,15 +19,22 @@ var ProxyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var c config.Config
 		errUnmarshall := viper.Unmarshal(&c)
+
+		logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level:     slog.LevelDebug,
+			AddSource: true,
+		}))
+		slog.SetDefault(logger)
+
 		if errUnmarshall != nil {
-			log.Println(errUnmarshall)
+			log.Panicln(errUnmarshall)
 		}
 
 		log.Println("Server start on port 3000")
 		server := proxy.New(c)
 		err := server.Start()
 		if err != nil {
-			log.Println(err)
+			log.Panicln(err)
 		}
 	},
 }

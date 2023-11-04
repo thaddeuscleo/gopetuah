@@ -38,7 +38,7 @@ func (s *Server) acceptConnectionLoop() {
 	for {
 		conn, err := s.ln.Accept()
 		if err != nil {
-			log.Println(err)
+			log.Panicln(err)
 			continue
 		}
 		go s.readConnectionLoop(conn)
@@ -51,28 +51,32 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 	buf := make([]byte, 1024)
 	n, err := downstreamConn.Read(buf)
 	if err != nil {
-		log.Println(err)
+		log.Panicln(err)
 	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(s.c.Upstreams))
 
 	for name, upstream := range s.c.Upstreams {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Skipping %s ...\n", name)
+			}
+		}()
+
 		log.Println("Connecting to: ", name)
 		upstreamConn, err := net.Dial("tcp", net.JoinHostPort(upstream.Host, upstream.Port))
 		if err != nil {
-			log.Println(err)
+			log.Panicln(err)
 			continue
 		}
-		go func() {
+
+		go func(name string) {
 			defer upstreamConn.Close()
 			defer wg.Done()
+			log.Println("package sended to: ", name)
 			go io.Copy(upstreamConn, strings.NewReader(string(buf[:n])))
-			_, err := io.Copy(downstreamConn, upstreamConn)
-			if err != nil {
-				log.Println(err)
-			}
-		}()
+		}(name)
 	}
 
 	wg.Wait()
