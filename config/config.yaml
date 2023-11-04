@@ -9,3 +9,6 @@ upstreams:
   anyname_upstream2:
     host: localhost
     port: 9000
+  anyname_upstream3:
+    host: localhost
+    port: 7000

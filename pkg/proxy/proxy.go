@@ -62,6 +62,7 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 		upstreamConn, err := net.Dial("tcp", net.JoinHostPort(upstream.Host, upstream.Port))
 		if err != nil {
 			log.Println(err)
+			continue
 		}
 		go func() {
 			defer upstreamConn.Close()
