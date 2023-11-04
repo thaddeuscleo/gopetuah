@@ -1,26 +1,29 @@
 package proxy
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"strings"
 	"sync"
+
+	"github.com/thaddeuscleo/gopetuah/config"
 )
 
 type Server struct {
-	listenAddr string
-	ln         net.Listener
+	ln net.Listener
+	c  config.Config
 }
 
-func New(listenAddr string) *Server {
+func New(c config.Config) *Server {
 	return &Server{
-		listenAddr: listenAddr,
+		c: c,
 	}
 }
 
 func (s *Server) Start() error {
-	ln, err := net.Listen("tcp", s.listenAddr)
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%s", s.c.Proxy.Port))
 	if err != nil {
 		return err
 	}
@@ -45,11 +48,6 @@ func (s *Server) acceptConnectionLoop() {
 func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 	defer downstreamConn.Close()
 
-	upstreams := []string{
-		"localhost:9000",
-		"localhost:8000",
-	}
-
 	buf := make([]byte, 1024)
 	n, err := downstreamConn.Read(buf)
 	if err != nil {
@@ -57,23 +55,23 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 	}
 
 	wg := sync.WaitGroup{}
-	wg.Add(len(upstreams))
+	wg.Add(len(s.c.Upstreams))
 
-	for idx, upstreamUrl := range upstreams {
-		upstreamConn, err := net.Dial("tcp", upstreamUrl)
+	for name, upstream := range s.c.Upstreams {
+		log.Println("Connecting to: ", name)
+		upstreamConn, err := net.Dial("tcp", net.JoinHostPort(upstream.Host, upstream.Port))
 		if err != nil {
 			log.Println(err)
 		}
-		go func(i int) {
+		go func() {
 			defer upstreamConn.Close()
 			defer wg.Done()
 			go io.Copy(upstreamConn, strings.NewReader(string(buf[:n])))
-			log.Println("Sended to upstream ", i)
 			_, err := io.Copy(downstreamConn, upstreamConn)
 			if err != nil {
 				log.Println(err)
 			}
-		}(idx)
+		}()
 	}
 
 	wg.Wait()

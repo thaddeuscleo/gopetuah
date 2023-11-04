@@ -4,9 +4,11 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/thaddeuscleo/gopetuah/cmd/proxy"
 )
 
@@ -27,6 +29,7 @@ func Execute() {
 }
 
 func init() {
+	initConfig()
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -37,4 +40,14 @@ func init() {
 	// when this action is called directly.
 	rootCmd.AddCommand(proxy.ProxyCmd)
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func initConfig() {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config/")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Println("fatal error config file: ", err)
+	}
 }

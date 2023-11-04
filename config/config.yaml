@@ -1,0 +1,11 @@
+proxy:
+  host: localhost
+  port: 3000
+
+upstreams:
+  anyname_upstream1:
+    host: localhost
+    port: 8000
+  anyname_upstream2:
+    host: localhost
+    port: 9000

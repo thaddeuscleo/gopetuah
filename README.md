@@ -24,35 +24,32 @@ To get started with Gopetuah, follow these simple steps:
 
 1. [Download the latest release](https://github.com/thaddeuscleo/gopetuah/releases).
 
-2. Configure your upstream servers in the `config.json` file.
+2. Configure your upstream servers in the `config.yaml` file.
 
 3. Run Gopetuah using the following command:
 
    ```
-   ./gopetuah
+   ./gopetuah proxy
    ```
 
 4. Gopetuah will start routing incoming TCP traffic to your configured upstream servers.
 
 ## Configuration
 
-You can configure Gopetuah by editing the `config.json` file. Customize the settings to meet your specific requirements, including specifying the endpoints of your upstream servers.
+You can configure Gopetuah by editing the `config.yaml` file. Customize the settings to meet your specific requirements, including specifying the endpoints of your upstream servers.
 
-```json
-{
-  "upstreams": [
-    {
-      "name": "Upstream 1",
-      "host": "upstream1.example.com",
-      "port": 8080
-    },
-    {
-      "name": "Upstream 2",
-      "host": "upstream2.example.com",
-      "port": 8888
-    }
-  ]
-}
+```yaml
+proxy:
+  host: localhost
+  port: 3000
+
+upstreams:
+  anyname_upstream1:
+    host: localhost
+    port: 8000
+  anyname_upstream2:
+    host: localhost
+    port: 9000
 ```
 
 ## License

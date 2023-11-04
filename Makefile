@@ -1,5 +1,5 @@
 run:
-	@go run cmd/proxy/main.go
+	@go run main.go proxy
 
 docker-build:
 	@docker compose --profile build build
