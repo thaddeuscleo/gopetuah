@@ -11,7 +11,6 @@ import (
 	"github.com/thaddeuscleo/gopetuah/pkg/proxy"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var ProxyCmd = &cobra.Command{
 	Use:   "proxy",
 	Short: "A brief proxy of your application",

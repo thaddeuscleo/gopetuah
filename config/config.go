@@ -6,7 +6,6 @@ type Config struct {
 }
 
 type Proxy struct {
-	Host string `mapstructure:"host"`
 	Port string `mapstructure:"port"`
 }
 

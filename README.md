@@ -40,7 +40,6 @@ You can configure Gopetuah by editing the `config.yaml` file. Customize the sett
 
 ```yaml
 proxy:
-  host: localhost
   port: 3000
 
 upstreams:
