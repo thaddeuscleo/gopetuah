@@ -70,7 +70,8 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 			defer upstreamConn.Close()
 			defer wg.Done()
 			log.Println("package sended to: ", name)
-			io.Copy(upstreamConn, strings.NewReader(string(buf[:n])))
+			go io.Copy(upstreamConn, strings.NewReader(string(buf[:n])))
+			io.Copy(downstreamConn, upstreamConn)
 		}(name)
 	}
 
