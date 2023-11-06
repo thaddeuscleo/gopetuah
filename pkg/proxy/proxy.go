@@ -54,11 +54,14 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 		log.Panicln(err)
 	}
 
+	resBuf := make([]byte, 1024)
+	resBuffN := 0
+
 	wg := sync.WaitGroup{}
 	wg.Add(len(s.c.Upstreams))
 
 	for name, upstream := range s.c.Upstreams {
-		log.Println("Connecting to: ", name)
+		log.Println("Connecting to:", name)
 		upstreamConn, err := net.Dial("tcp", net.JoinHostPort(upstream.Host, upstream.Port))
 		if err != nil {
 			log.Println("Dialing failed on", name)
@@ -69,11 +72,14 @@ func (s *Server) readConnectionLoop(downstreamConn net.Conn) {
 		go func(name string) {
 			defer upstreamConn.Close()
 			defer wg.Done()
-			log.Println("package sended to: ", name)
 			go io.Copy(upstreamConn, strings.NewReader(string(buf[:n])))
-			io.Copy(downstreamConn, upstreamConn)
+			resBuffN, err = upstreamConn.Read(resBuf)
+			if err != nil {
+				log.Panicln(err)
+			}
 		}(name)
 	}
 
 	wg.Wait()
+	downstreamConn.Write(resBuf[:resBuffN])
 }

@@ -1,4 +1,5 @@
 run:
+	@clear
 	@go run main.go proxy
 
 docker-build:
